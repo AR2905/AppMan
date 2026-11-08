@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent, type ReactNode } from "react";
+import { Combobox } from "@/app/components/combobox";
 import {
   JOB_STATUSES,
   createEmptyJob,
@@ -12,6 +13,8 @@ import {
 
 type Props = {
   job: JobApplication | null;
+  locationOptions: string[];
+  platformOptions: string[];
   onClose: () => void;
   onSaved: () => void;
 };
@@ -43,7 +46,13 @@ function Field({ label, required, className, children }: FieldProps) {
   );
 }
 
-export function JobFormDialog({ job, onClose, onSaved }: Props) {
+export function JobFormDialog({
+  job,
+  locationOptions,
+  platformOptions,
+  onClose,
+  onSaved,
+}: Props) {
   const [values, setValues] = useState<JobFormValues>(() =>
     job ? jobToFormValues(job) : createEmptyJob(),
   );
@@ -140,11 +149,22 @@ export function JobFormDialog({ job, onClose, onSaved }: Props) {
             />
           </Field>
 
-          <Field label="Location">
+          <Field label="Applied on">
             <input
+              type="date"
+              value={values.appliedDate}
+              onChange={(event) => setValue("appliedDate", event.target.value)}
+              className={inputClass}
+            />
+          </Field>
+
+          <Field label="Location">
+            <Combobox
               value={values.location}
-              onChange={(event) => setValue("location", event.target.value)}
+              onChange={(value) => setValue("location", value)}
+              options={locationOptions}
               placeholder="Remote / Bengaluru"
+              ariaLabel="Location"
               className={inputClass}
             />
           </Field>
@@ -181,10 +201,12 @@ export function JobFormDialog({ job, onClose, onSaved }: Props) {
           </Field>
 
           <Field label="Application Platform">
-            <input
+            <Combobox
               value={values.platform}
-              onChange={(event) => setValue("platform", event.target.value)}
+              onChange={(value) => setValue("platform", value)}
+              options={platformOptions}
               placeholder="LinkedIn / Naukri / Company site"
+              ariaLabel="Application platform"
               className={inputClass}
             />
           </Field>

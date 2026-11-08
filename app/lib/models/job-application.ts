@@ -20,6 +20,7 @@ const jobApplicationSchema = new Schema(
     hrContent: { type: String, default: "" },
     notes: { type: String, default: "" },
     jobDescription: { type: String, default: "" },
+    appliedDate: { type: String, default: "", trim: true },
     status: {
       type: String,
       enum: JOB_STATUSES,

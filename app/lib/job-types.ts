@@ -9,6 +9,21 @@ export const JOB_STATUSES = [
 
 export type JobStatus = (typeof JOB_STATUSES)[number];
 
+export function toLocalISODate(date: Date): string {
+  const offset = date.getTimezoneOffset() * 60000;
+  return new Date(date.getTime() - offset).toISOString().slice(0, 10);
+}
+
+export function todayISODate(): string {
+  return toLocalISODate(new Date());
+}
+
+export function dateFromTimestamp(timestamp?: string): string {
+  if (!timestamp) return todayISODate();
+  const date = new Date(timestamp);
+  return Number.isNaN(date.getTime()) ? todayISODate() : toLocalISODate(date);
+}
+
 export type JobApplication = {
   _id: string;
   company: string;
@@ -23,6 +38,7 @@ export type JobApplication = {
   notes: string;
   jobDescription: string;
   status: JobStatus;
+  appliedDate: string;
   createdAt?: string;
   updatedAt?: string;
 };
@@ -40,6 +56,7 @@ export type JobFormValues = {
   notes: string;
   jobDescription: string;
   status: JobStatus;
+  appliedDate: string;
 };
 
 export const JOB_FIELDS = [
@@ -55,6 +72,7 @@ export const JOB_FIELDS = [
   "notes",
   "jobDescription",
   "status",
+  "appliedDate",
 ] as const;
 
 export function createEmptyJob(): JobFormValues {
@@ -71,6 +89,7 @@ export function createEmptyJob(): JobFormValues {
     notes: "",
     jobDescription: "",
     status: "Saved",
+    appliedDate: todayISODate(),
   };
 }
 
@@ -88,6 +107,7 @@ export function jobToFormValues(job: JobApplication): JobFormValues {
     notes: job.notes,
     jobDescription: job.jobDescription,
     status: job.status,
+    appliedDate: job.appliedDate || dateFromTimestamp(job.createdAt),
   };
 }
 

@@ -20,7 +20,9 @@ export async function GET() {
 
   try {
     await connectToDatabase();
-    const jobs = await JobApplication.find().sort({ createdAt: -1 }).lean();
+    const jobs = await JobApplication.find()
+      .sort({ appliedDate: -1, createdAt: -1 })
+      .lean();
     return Response.json({ jobs });
   } catch (error) {
     return databaseError(error);

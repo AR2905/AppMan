@@ -12,6 +12,7 @@ const TEXT_FIELDS = [
   "hrContent",
   "notes",
   "jobDescription",
+  "appliedDate",
 ] as const;
 
 export class JobPayloadError extends Error {
