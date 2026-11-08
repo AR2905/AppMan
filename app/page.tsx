@@ -181,7 +181,7 @@ export default function Home() {
   }
 
   return (
-    <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-10 sm:px-6 lg:px-8">
+    <main className="mx-auto w-full flex-1 px-4 py-10 sm:px-6 lg:px-8">
       <header className="mb-8">
         <h1 className="text-3xl font-semibold tracking-tight">
           Resume &amp; JD Matcher
@@ -210,22 +210,20 @@ export default function Home() {
           <button
             type="button"
             onClick={() => switchMode("single")}
-            className={`rounded-md px-4 py-2 text-sm font-medium transition ${
-              mode === "single"
+            className={`rounded-md px-4 py-2 text-sm font-medium transition ${mode === "single"
                 ? "bg-foreground text-background"
                 : "text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
-            }`}
+              }`}
           >
             Single resume
           </button>
           <button
             type="button"
             onClick={() => switchMode("sections")}
-            className={`rounded-md px-4 py-2 text-sm font-medium transition ${
-              mode === "sections"
+            className={`rounded-md px-4 py-2 text-sm font-medium transition ${mode === "sections"
                 ? "bg-foreground text-background"
                 : "text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
-            }`}
+              }`}
           >
             Separate sections
           </button>
@@ -264,11 +262,10 @@ export default function Home() {
                   </button>
                 ) : null}
                 <label
-                  className={`cursor-pointer rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium transition dark:border-zinc-700 ${
-                    uploading
+                  className={`cursor-pointer rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium transition dark:border-zinc-700 ${uploading
                       ? "pointer-events-none opacity-50"
                       : "hover:bg-zinc-100 dark:hover:bg-zinc-800"
-                  }`}
+                    }`}
                 >
                   {uploading ? "Reading file..." : "Choose file"}
                   <input

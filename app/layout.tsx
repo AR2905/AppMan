@@ -26,7 +26,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col">
         <nav className="border-b border-zinc-200 dark:border-zinc-800">
-          <div className="mx-auto flex w-full max-w-7xl items-center gap-6 px-4 py-3 text-sm sm:px-6 lg:px-8">
+          <div className="mx-auto flex w-full items-center gap-6 px-4 py-3 text-sm sm:px-6 lg:px-8">
             <Link href="/" className="font-semibold">
               Resume Matcher
             </Link>

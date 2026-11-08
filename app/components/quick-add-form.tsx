@@ -130,13 +130,6 @@ export function QuickAddForm({
       className="mb-6 rounded-xl border border-zinc-200 bg-zinc-50/60 p-4 dark:border-zinc-800 dark:bg-zinc-900/40"
     >
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-        <div>
-          <h2 className="text-sm font-semibold">Quick add</h2>
-          <p className="mt-0.5 text-xs text-zinc-500">
-            Type, press Tab to move, Enter to pick a suggestion. Add with the
-            button (or Tab to it and hit Enter).
-          </p>
-        </div>
         {message ? (
           <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400">
             {message}
@@ -293,7 +286,7 @@ export function QuickAddForm({
           disabled={saving}
           className="rounded-lg bg-foreground px-5 py-2 text-sm font-semibold text-background transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {saving ? "Adding..." : "Add application"}
+          {saving ? "Adding..." : "Add"}
         </button>
       </div>
     </form>

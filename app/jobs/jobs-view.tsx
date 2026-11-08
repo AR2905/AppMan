@@ -362,7 +362,7 @@ export function JobsView() {
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">Job Store</h1>
           <p className="mt-2 text-zinc-600 dark:text-zinc-400">
-            Track every job you apply to, from the JD to the final status.
+            Track every job you apply
           </p>
         </div>
         <button
@@ -373,7 +373,7 @@ export function JobsView() {
           }}
           className="rounded-xl bg-foreground px-5 py-2.5 text-sm font-semibold text-background transition hover:opacity-90"
         >
-          + Add application
+          + Add New
         </button>
       </header>
 
