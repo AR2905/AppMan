@@ -90,7 +90,7 @@ function ClampedText({ value, onOpen, lines = 2, className = "" }: ClampedTextPr
       type="button"
       onClick={onOpen}
       title={value}
-      className={`block w-full min-w-0 break-words text-left transition hover:text-blue-600 dark:hover:text-blue-400 ${clampClass} ${className}`}
+      className={`block !max-h-24 w-full min-w-0 break-words text-left transition hover:text-blue-600 dark:hover:text-blue-400 ${clampClass} ${className}`}
     >
       {value}
     </button>
