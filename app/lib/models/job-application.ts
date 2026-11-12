@@ -5,7 +5,7 @@ import {
   type InferSchemaType,
   type Model,
 } from "mongoose";
-import { JOB_STATUSES } from "@/app/lib/job-types";
+import { JOB_SOURCES, JOB_STATUSES } from "@/app/lib/job-types";
 
 const jobApplicationSchema = new Schema(
   {
@@ -26,6 +26,12 @@ const jobApplicationSchema = new Schema(
       enum: JOB_STATUSES,
       default: "Saved",
     },
+    source: {
+      type: String,
+      enum: JOB_SOURCES,
+      default: "manual",
+    },
+    importedFrom: { type: String, default: "", trim: true },
   },
   { timestamps: true },
 );

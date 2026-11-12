@@ -15,6 +15,7 @@ import { QuickAddForm } from "@/app/components/quick-add-form";
 import {
   JOB_STATUSES,
   type JobApplication,
+  type JobSource,
   type JobStatus,
 } from "@/app/lib/job-types";
 import {
@@ -45,8 +46,8 @@ const STATUS_STYLES: Record<JobStatus, string> = {
 const COLUMN_COUNT = 11;
 
 const headerCell =
-  "whitespace-nowrap px-3 py-3 text-xs font-semibold uppercase tracking-wide text-zinc-500";
-const bodyCell = "px-3 py-3";
+  "px-1 py-3 text-left align-bottom text-[11px] font-semibold uppercase tracking-wide text-zinc-500 sm:px-2";
+const bodyCell = "px-1 py-3 align-top sm:px-2";
 const filterLabel =
   "flex flex-col gap-1 text-xs font-medium text-zinc-600 dark:text-zinc-400";
 const filterControl =
@@ -61,6 +62,90 @@ const DATE_FILTERS: { value: DateFilter; label: string }[] = [
   { value: "30", label: "Last 30 days" },
 ];
 
+type SourceFilter = "All" | JobSource;
+
+const SOURCE_FILTERS: { value: SourceFilter; label: string }[] = [
+  { value: "All", label: "All sources" },
+  { value: "manual", label: "Added manually" },
+  { value: "imported", label: "Imported" },
+];
+
+type ClampedTextProps = {
+  value: string;
+  onOpen: () => void;
+  lines?: 1 | 2 | 3;
+  className?: string;
+};
+
+function ClampedText({ value, onOpen, lines = 2, className = "" }: ClampedTextProps) {
+  if (!value) {
+    return <span className="block text-zinc-400">—</span>;
+  }
+
+  const clampClass =
+    lines === 1 ? "line-clamp-1" : lines === 3 ? "line-clamp-3" : "line-clamp-2";
+
+  return (
+    <button
+      type="button"
+      onClick={onOpen}
+      title={value}
+      className={`block w-full min-w-0 break-words text-left transition hover:text-blue-600 dark:hover:text-blue-400 ${clampClass} ${className}`}
+    >
+      {value}
+    </button>
+  );
+}
+
+type ContentDialogProps = {
+  label: string;
+  value: string;
+  onClose: () => void;
+};
+
+function ContentDialog({ label, value, onClose }: ContentDialogProps) {
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
+  return (
+    <div
+      className="fixed inset-0 z-50 overflow-y-auto bg-black/50 p-4"
+      onClick={onClose}
+      role="presentation"
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={label}
+        className="mx-auto my-8 w-full max-w-2xl overflow-hidden rounded-2xl bg-white shadow-xl dark:bg-zinc-900"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="flex items-start justify-between gap-4 border-b border-zinc-200 px-5 py-4 dark:border-zinc-800">
+          <h2 className="text-base font-semibold">{label}</h2>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-lg border border-zinc-300 px-3 py-1.5 text-xs font-medium transition hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
+          >
+            Close
+          </button>
+        </div>
+        <p className="max-h-[70vh] overflow-y-auto whitespace-pre-wrap break-words px-5 py-4 text-sm leading-relaxed text-zinc-700 dark:text-zinc-200">
+          {value || "—"}
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export function JobsView() {
   use(io());
 
@@ -71,9 +156,14 @@ export function JobsView() {
   const [formOpen, setFormOpen] = useState(false);
   const [editingJob, setEditingJob] = useState<JobApplication | null>(null);
   const [viewingJob, setViewingJob] = useState<JobApplication | null>(null);
+  const [dialogContent, setDialogContent] = useState<{
+    label: string;
+    value: string;
+  } | null>(null);
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<"All" | JobStatus>("All");
+  const [sourceFilter, setSourceFilter] = useState<SourceFilter>("All");
   const [locationFilter, setLocationFilter] = useState("All");
   const [platformFilter, setPlatformFilter] = useState("All");
   const [dateFilter, setDateFilter] = useState<DateFilter>("all");
@@ -203,6 +293,13 @@ export function JobsView() {
         return false;
       }
 
+      if (
+        sourceFilter !== "All" &&
+        (job.source ?? "manual") !== sourceFilter
+      ) {
+        return false;
+      }
+
       if (locationFilter !== "All" && job.location !== locationFilter) {
         return false;
       }
@@ -246,6 +343,7 @@ export function JobsView() {
     jobs,
     search,
     statusFilter,
+    sourceFilter,
     locationFilter,
     platformFilter,
     dateFilter,
@@ -260,6 +358,7 @@ export function JobsView() {
   const hasFilters =
     search.trim() !== "" ||
     statusFilter !== "All" ||
+    sourceFilter !== "All" ||
     locationFilter !== "All" ||
     platformFilter !== "All" ||
     dateFilter !== "all";
@@ -267,6 +366,7 @@ export function JobsView() {
   function clearFilters() {
     setSearch("");
     setStatusFilter("All");
+    setSourceFilter("All");
     setLocationFilter("All");
     setPlatformFilter("All");
     setDateFilter("all");
@@ -420,6 +520,23 @@ export function JobsView() {
         </label>
 
         <label className={filterLabel}>
+          <span>Source</span>
+          <select
+            value={sourceFilter}
+            onChange={(event) =>
+              setSourceFilter(event.target.value as SourceFilter)
+            }
+            className={filterControl}
+          >
+            {SOURCE_FILTERS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className={filterLabel}>
           <span>Location</span>
           <select
             value={locationFilter}
@@ -525,8 +642,21 @@ export function JobsView() {
               Showing {filteredCount} of {jobs.length} applications across{" "}
               {groups.length} {groups.length === 1 ? "day" : "days"}.
             </p>
-            <div className="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-800">
-              <table className="w-full min-w-[1400px] text-left text-sm">
+            <div className="overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800">
+              <table className="w-full table-fixed text-left text-sm">
+                <colgroup>
+                  <col style={{ width: "9%" }} />
+                  <col style={{ width: "12%" }} />
+                  <col style={{ width: "8%" }} />
+                  <col style={{ width: "11%" }} />
+                  <col style={{ width: "13%" }} />
+                  <col style={{ width: "8%" }} />
+                  <col style={{ width: "11%" }} />
+                  <col style={{ width: "11%" }} />
+                  <col style={{ width: "5%" }} />
+                  <col style={{ width: "7%" }} />
+                  <col style={{ width: "5%" }} />
+                </colgroup>
                 <thead className="bg-zinc-50 dark:bg-zinc-900">
                   <tr>
                     <th className={headerCell}>Company</th>
@@ -567,70 +697,152 @@ export function JobsView() {
                           className="align-top transition hover:bg-zinc-50 dark:hover:bg-zinc-900"
                         >
                           <td className={`${bodyCell} font-medium`}>
-                            {job.company}
-                          </td>
-                          <td className={bodyCell}>{job.role}</td>
-                          <td className={bodyCell}>{job.location || "—"}</td>
-                          <td className={bodyCell}>
-                            <div className="text-xs text-zinc-500">Offer</div>
-                            <div>{job.salaryOffer || "—"}</div>
-                            <div className="mt-1 text-xs text-zinc-500">
-                              Expected
+                            <div className="flex min-w-0 flex-col items-start gap-1">
+                              <ClampedText
+                                value={job.company}
+                                onOpen={() =>
+                                  setDialogContent({
+                                    label: "Company",
+                                    value: job.company,
+                                  })
+                                }
+                              />
+                              {job.source === "imported" ? (
+                                <span
+                                  className="max-w-full opacity-20 truncate rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-700 dark:bg-amber-950 dark:text-amber-300"
+                                  title={
+                                    job.importedFrom
+                                      ? `Imported from ${job.importedFrom}`
+                                      : "Imported application"
+                                  }
+                                >
+                                  I
+                                </span>
+                              ) : (
+                                <span className="max-w-full opacity-20 truncate rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400">
+                                  M
+                                </span>
+                              )}
                             </div>
-                            <div>{job.salaryExpected || "—"}</div>
+                          </td>
+                          <td className={bodyCell}>
+                            <ClampedText
+                              value={job.role}
+                              onOpen={() =>
+                                setDialogContent({
+                                  label: "Role",
+                                  value: job.role,
+                                })
+                              }
+                            />
+                          </td>
+                          <td className={bodyCell}>
+                            <ClampedText
+                              value={job.location}
+                              onOpen={() =>
+                                setDialogContent({
+                                  label: "Location",
+                                  value: job.location,
+                                })
+                              }
+                            />
+                          </td>
+                          <td className={bodyCell}>
+                            <button
+                              type="button"
+                              title={`Offer: ${job.salaryOffer || "—"}\nExpected: ${job.salaryExpected || "—"}`}
+                              onClick={() =>
+                                setDialogContent({
+                                  label: "Salary",
+                                  value: `Offer: ${job.salaryOffer || "—"}\nExpected: ${job.salaryExpected || "—"}`,
+                                })
+                              }
+                              className="block w-full min-w-0 text-left transition hover:text-blue-600 dark:hover:text-blue-400"
+                            >
+                              <span className="block truncate text-xs text-zinc-500">
+                                Offer
+                              </span>
+                              <span className="block truncate">
+                                {job.salaryOffer || "—"}
+                              </span>
+                              <span className="mt-1 block truncate text-xs text-zinc-500">
+                                Expected
+                              </span>
+                              <span className="block truncate">
+                                {job.salaryExpected || "—"}
+                              </span>
+                            </button>
                           </td>
                           <td className={bodyCell}>
                             {job.platform || job.platformUrl ? (
-                              <div className="flex flex-col">
-                                {job.platformUrl ? (
-                                  <a
-                                    href={job.platformUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-blue-600 hover:underline dark:text-blue-400"
-                                  >
+                              job.platformUrl ? (
+                                <a
+                                  href={job.platformUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  title={job.platformUrl}
+                                  className="flex min-w-0 flex-col text-blue-600 hover:underline dark:text-blue-400"
+                                >
+                                  <span className="block truncate">
                                     {job.platform || "Open link"}
-                                  </a>
-                                ) : (
-                                  <span>{job.platform}</span>
-                                )}
-                                {job.platformUrl ? (
-                                  <span
-                                    className="mt-0.5 block max-w-[180px] truncate text-xs text-zinc-500"
-                                    title={job.platformUrl}
-                                  >
+                                  </span>
+                                  <span className="mt-0.5 block truncate text-xs text-zinc-500">
                                     {job.platformUrl}
                                   </span>
-                                ) : null}
-                              </div>
+                                </a>
+                              ) : (
+                                <ClampedText
+                                  value={job.platform}
+                                  onOpen={() =>
+                                    setDialogContent({
+                                      label: "Platform",
+                                      value: job.platform,
+                                    })
+                                  }
+                                />
+                              )
                             ) : (
                               "—"
                             )}
                           </td>
                           <td className={bodyCell}>
-                            {job.experienceExpected || "—"}
+                            <ClampedText
+                              value={job.experienceExpected}
+                              onOpen={() =>
+                                setDialogContent({
+                                  label: "Experience",
+                                  value: job.experienceExpected,
+                                })
+                              }
+                            />
                           </td>
                           <td className={bodyCell}>
-                            <span
-                              className="block max-w-[180px] truncate"
-                              title={job.hrContent}
-                            >
-                              {job.hrContent || "—"}
-                            </span>
+                            <ClampedText
+                              value={job.hrContent}
+                              onOpen={() =>
+                                setDialogContent({
+                                  label: "HR Content",
+                                  value: job.hrContent,
+                                })
+                              }
+                            />
                           </td>
                           <td className={bodyCell}>
-                            <span
-                              className="block max-w-[180px] truncate"
-                              title={job.notes}
-                            >
-                              {job.notes || "—"}
-                            </span>
+                            <ClampedText
+                              value={job.notes}
+                              onOpen={() =>
+                                setDialogContent({
+                                  label: "Notes",
+                                  value: job.notes,
+                                })
+                              }
+                            />
                           </td>
                           <td className={bodyCell}>
                             <button
                               type="button"
                               onClick={() => setViewingJob(job)}
-                              className="whitespace-nowrap rounded-lg border border-zinc-300 px-2.5 py-1 text-xs font-medium transition hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
+                              className="w-full break-words rounded-lg border border-zinc-300 px-1 py-1 text-[11px] font-medium leading-tight transition hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
                             >
                               View JD
                             </button>
@@ -644,7 +856,7 @@ export function JobsView() {
                                   event.target.value as JobStatus,
                                 )
                               }
-                              className={`rounded-full px-2.5 py-1 text-xs font-medium outline-none ${STATUS_STYLES[job.status]}`}
+                              className={`w-full min-w-0 max-w-full rounded-full px-2 py-1 text-xs font-medium outline-none ${STATUS_STYLES[job.status]}`}
                             >
                               {JOB_STATUSES.map((status) => (
                                 <option key={status} value={status}>
@@ -653,28 +865,28 @@ export function JobsView() {
                               ))}
                             </select>
                           </td>
-                          <td
-                            className={`${bodyCell} whitespace-nowrap text-right`}
-                          >
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setEditingJob(job);
-                                setFormOpen(true);
-                              }}
-                              className="text-xs font-medium text-blue-600 hover:underline dark:text-blue-400"
-                              aria-label={`Edit application at ${job.company}`}
-                            >
-                              <Edit2 size={14}></Edit2>
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => handleDelete(job)}
-                              className="ml-3 text-xs font-medium text-red-600 hover:underline dark:text-red-400"
-                              aria-label={`Delete application at ${job.company}`}
-                            >
-                              <Trash size={14}></Trash>
-                            </button>
+                          <td className={`${bodyCell} text-right`}>
+                            <div className="flex items-center justify-end gap-1">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setEditingJob(job);
+                                  setFormOpen(true);
+                                }}
+                                className=" text-xs font-medium text-blue-600 hover:underline dark:text-blue-400 [&>svg]:h-auto [&>svg]:w-full"
+                                aria-label={`Edit application at ${job.company}`}
+                              >
+                                <Edit2 size={14}></Edit2>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleDelete(job)}
+                                className=" text-xs font-medium text-red-600 hover:underline dark:text-red-400 [&>svg]:h-auto [&>svg]:w-full"
+                                aria-label={`Delete application at ${job.company}`}
+                              >
+                                <Trash size={14}></Trash>
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))}
@@ -742,6 +954,14 @@ export function JobsView() {
             setEditingJob(null);
             void loadJobs();
           }}
+        />
+      ) : null}
+
+      {dialogContent ? (
+        <ContentDialog
+          label={dialogContent.label}
+          value={dialogContent.value}
+          onClose={() => setDialogContent(null)}
         />
       ) : null}
 

@@ -9,6 +9,10 @@ export const JOB_STATUSES = [
 
 export type JobStatus = (typeof JOB_STATUSES)[number];
 
+export const JOB_SOURCES = ["manual", "imported"] as const;
+
+export type JobSource = (typeof JOB_SOURCES)[number];
+
 export function toLocalISODate(date: Date): string {
   const offset = date.getTimezoneOffset() * 60000;
   return new Date(date.getTime() - offset).toISOString().slice(0, 10);
@@ -39,6 +43,8 @@ export type JobApplication = {
   jobDescription: string;
   status: JobStatus;
   appliedDate: string;
+  source?: JobSource;
+  importedFrom?: string;
   createdAt?: string;
   updatedAt?: string;
 };
