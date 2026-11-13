@@ -36,6 +36,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             >
               Job Store
             </Link>
+            <Link
+              href="/dashboard"
+              className="text-zinc-600 transition hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-zinc-100"
+            >
+              Dashboard
+            </Link>
           </div>
         </nav>
         {children}
