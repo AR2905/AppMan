@@ -26,6 +26,8 @@ type Props = {
 const inputClass =
   "w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 outline-none transition focus:border-zinc-500 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100";
 
+const textareaClass = `${inputClass} resize-y`;
+
 const labelClass = "flex flex-col gap-1 text-xs font-medium text-zinc-600 dark:text-zinc-400";
 
 function Field({
@@ -161,7 +163,7 @@ export function QuickAddForm({
           />
         </Field>
 
-        <Field label="Applied on">
+        {/* <Field label="Applied on">
           <input
             type="date"
             value={values.appliedDate}
@@ -170,7 +172,7 @@ export function QuickAddForm({
             aria-label="Applied on"
             suppressHydrationWarning
           />
-        </Field>
+        </Field> */}
 
         <Field label="Location">
           <Combobox
@@ -216,17 +218,6 @@ export function QuickAddForm({
           />
         </Field>
 
-        <Field label="Platform URL">
-          <input
-            value={values.platformUrl}
-            onChange={(event) => setValue("platformUrl", event.target.value)}
-            placeholder="https://..."
-            className={inputClass}
-            aria-label="Platform URL"
-            autoComplete="off"
-          />
-        </Field>
-
         <Field label="Experience expected">
           <input
             value={values.experienceExpected}
@@ -236,6 +227,36 @@ export function QuickAddForm({
             placeholder="2-4 years"
             className={inputClass}
             aria-label="Experience expected"
+            autoComplete="off"
+          />
+        </Field>
+
+
+        <Field label="Status">
+          <select
+            value={values.status}
+            onChange={(event) =>
+              setValue("status", event.target.value as JobStatus)
+            }
+            className={inputClass}
+            aria-label="Status"
+          >
+            {JOB_STATUSES.map((status) => (
+              <option key={status} value={status}>
+                {status}
+              </option>
+            ))}
+          </select>
+        </Field>
+
+
+        <Field label="Platform URL">
+          <input
+            value={values.platformUrl}
+            onChange={(event) => setValue("platformUrl", event.target.value)}
+            placeholder="https://..."
+            className={inputClass}
+            aria-label="Platform URL"
             autoComplete="off"
           />
         </Field>
@@ -262,21 +283,17 @@ export function QuickAddForm({
           />
         </Field>
 
-        <Field label="Status">
-          <select
-            value={values.status}
-            onChange={(event) =>
-              setValue("status", event.target.value as JobStatus)
-            }
-            className={inputClass}
-            aria-label="Status"
-          >
-            {JOB_STATUSES.map((status) => (
-              <option key={status} value={status}>
-                {status}
-              </option>
-            ))}
-          </select>
+
+
+        <Field label="Job Description (JD)" className="sm:col-span-2 lg:col-span-4">
+          <textarea
+            value={values.jobDescription}
+            onChange={(event) => setValue("jobDescription", event.target.value)}
+            placeholder="Paste the full job description here..."
+            rows={4}
+            className={textareaClass}
+            aria-label="Job description"
+          />
         </Field>
       </div>
 
