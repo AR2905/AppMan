@@ -185,13 +185,13 @@ export function QuickAddForm({
           />
         </Field>
 
-        <Field label="Salary offer">
+        <Field label="Role Budget">
           <input
             value={values.salaryOffer}
             onChange={(event) => setValue("salaryOffer", event.target.value)}
             placeholder="₹12 LPA"
             className={inputClass}
-            aria-label="Salary offer"
+            aria-label="Role Budget"
             autoComplete="off"
           />
         </Field>

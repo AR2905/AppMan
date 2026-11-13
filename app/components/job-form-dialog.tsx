@@ -180,7 +180,7 @@ export function JobFormDialog({
             />
           </Field>
 
-          <Field label="Salary Offer">
+          <Field label="Role Budget">
             <input
               value={values.salaryOffer}
               onChange={(event) => setValue("salaryOffer", event.target.value)}
