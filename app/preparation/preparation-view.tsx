@@ -210,20 +210,20 @@ function StackProgressMap({
                   title={`${stack.name}: ${stack.done}/${stack.total} checkpoints complete. Click to view.`}
                   aria-label={`Scroll to ${stack.name}`}
                   className={`flex w-full min-w-0 items-center gap-2 rounded-lg border px-2.5 py-2 text-left transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-950 ${isComplete
-                      ? "border-emerald-500 bg-emerald-500 text-white dark:border-emerald-400 dark:bg-emerald-600"
-                      : isCurrent
-                        ? "border-emerald-300 bg-emerald-50 text-emerald-900 dark:border-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-100"
-                        : isStarted
-                          ? "border-emerald-200 bg-white text-zinc-800 dark:border-emerald-800 dark:bg-zinc-900 dark:text-zinc-100"
-                          : "border-zinc-200 bg-white text-zinc-600 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300"
+                    ? "border-emerald-500 bg-emerald-500 text-white dark:border-emerald-400 dark:bg-emerald-600"
+                    : isCurrent
+                      ? "border-emerald-300 bg-emerald-50 text-emerald-900 dark:border-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-100"
+                      : isStarted
+                        ? "border-emerald-200 bg-white text-zinc-800 dark:border-emerald-800 dark:bg-zinc-900 dark:text-zinc-100"
+                        : "border-zinc-200 bg-white text-zinc-600 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300"
                     }`}
                 >
                   <span
                     className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${isComplete
-                        ? "bg-white/25 text-white"
-                        : isCurrent
-                          ? "bg-emerald-500 text-white"
-                          : "bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400"
+                      ? "bg-white/25 text-white"
+                      : isCurrent
+                        ? "bg-emerald-500 text-white"
+                        : "bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400"
                       }`}
                   >
                     {isComplete ? <Check size={12} strokeWidth={3} /> : index + 1}
@@ -234,8 +234,8 @@ function StackProgressMap({
                     </span>
                     <span
                       className={`mt-1.5 block h-1 w-full overflow-hidden rounded-full ${isComplete
-                          ? "bg-white/30"
-                          : "bg-zinc-200 dark:bg-zinc-700"
+                        ? "bg-white/30"
+                        : "bg-zinc-200 dark:bg-zinc-700"
                         }`}
                     >
                       <span
