@@ -42,6 +42,18 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             >
               Dashboard
             </Link>
+            <Link
+              href="/preparation"
+              className="text-zinc-600 transition hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-zinc-100"
+            >
+              Prep
+            </Link>
+            <Link
+              href="/preparation/dashboard"
+              className="text-zinc-600 transition hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-zinc-100"
+            >
+              Prep Dashboard
+            </Link>
           </div>
         </nav>
         {children}
